@@ -1,0 +1,34 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+  TELEGRAM_BOT_TOKEN: "dummy"
+  TELEGRAM_CHAT_ID: "dummy"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          target: thumbv6m-none-eabi
+      - run: cargo install flip-link
+      - run: cargo build -p ch9120 -p telegram
+      - run: cargo build -p pwrbit --target thumbv6m-none-eabi
+      - run: cargo build -p pwrbit --target thumbv6m-none-eabi --release
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+          target: thumbv6m-none-eabi
+      - run: cargo install flip-link
+      - run: cargo fmt -- --check
+      - run: cargo clippy -p ch9120 -p telegram -- --deny=warnings
+      - run: cargo clippy -p pwrbit --target thumbv6m-none-eabi -- --deny=warnings

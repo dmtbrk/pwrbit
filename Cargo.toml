@@ -1,0 +1,9 @@
+[workspace]
+members = ["ch9120", "telegram", "pwrbit"]
+resolver = "2"
+
+# cargo build/run --release
+[profile.release]
+codegen-units = 1
+lto = 'thin'
+opt-level = 'z'
